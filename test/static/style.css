@@ -1,0 +1,133 @@
+*, 
+*::after, 
+*::before{
+    box-sizing: border-box;
+}
+
+body{
+    color: #000;
+}
+
+.align-center{
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-container{
+    display:flex;
+}
+
+.main-container .left{
+    width: 50%;
+    height:100vh;
+    border-radius: 0 2% 2% 0;
+    box-shadow: #000022 0px 8px 8px, #dddd 1px 1px 5px;
+}
+
+.right{
+    width:auto;
+    margin:auto;
+}
+
+.right .content-section{
+    width: 380px;
+    box-shadow: #dadada 0px 8px 15px, #aaa 1px 1px 10px;
+    border-radius: 8px;
+}
+
+.right .form-group{
+    margin-bottom: 10px;
+}
+
+.login-container{
+    width:100%;
+    height:100vh;
+}
+
+
+.center{
+    width:380px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
+
+.side-navigation{
+    position:absolute;
+    width: 300px;
+    height: 100vh;
+}
+
+.side-navigation p{
+    font-size: 16px;
+}
+
+.task-count .table td{
+    text-align: center;
+}
+
+.profile img{
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px 0px;
+}
+
+.profile .user-info p{
+    margin-bottom: 0;
+}
+
+.task-count{
+    width:max-content;
+}
+.task-count table tr{
+    text-align: center;
+}
+
+.main{
+    position: relative;
+    margin-left: 300px;
+}
+
+.row{
+    gap: 20px;
+    background-color: red;
+}
+
+.task-list{
+    height: 520px;
+    overflow: scroll;
+}
+
+.task-list .table{
+    width: 92%;
+    height: fit-content;
+    margin:auto;
+    border-collapse: collapse;
+}
+
+.task-list .table thead{
+    border-bottom: 2px solid #000;
+}
+
+.task-list .table th{
+    white-space: nowrap;
+    position: sticky;
+    top:0;
+    z-index: 2;
+    background-color: #fff;
+}
+
+.task-list table tr{
+    margin: 10px;
+}
+
+
+.action-btn{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-btn > *{
+    margin-right: 10px;
+}

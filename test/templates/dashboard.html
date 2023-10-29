@@ -1,0 +1,212 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="dashboard-container">
+    <!-- Side navigation -->
+    <div class="side-navigation border-end">
+        <div class="navbar-brand align-center border-bottom p-1">
+            <b class="my-3 fw-semibold">Task Manager</b>
+        </div>
+        <div class="profile align-center mt-4">
+            <div class="img mb-2">
+                <img src="../static/image/avatar1.jpg" width="120" height="120">
+            </div>
+            
+            <div class="user-info mt-2 text-center">
+                <p class="fw-bolder">{{ user.fullname }}</p>
+                <p class="fw-medium">{{ user.role }}</p>
+            </div>
+
+            <div class="task-count mt-4">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <td class="text-black fs-4 fw-bold">{{ tasks[0].query.filter_by(user_id=user.id, status='In Progress').count() if tasks else 0}}</td>
+                            <td class="text-black fs-4 fw-bold">{{ tasks[0].query.filter_by(user_id=user.id, status='To Do').count() if tasks else 0}}</td>
+                            <td class="text-black fs-4 fw-bold">{{ tasks[0].query.filter_by(user_id=user.id).count() if tasks else 0}}</td>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>In Progress</td>
+                            <td>Waiting</td>
+                            <td>Completed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="logout-btn mt-3">
+                <a class="btn btn-outline-danger" href="{{ url_for('logout') }}" role="button">Log Out</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Page content -->
+    <div class="main p-4">
+        <div class="message text-center" id="successMessage" style="z-index: -1;">
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="text-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="pt-2 px-4">
+            <h4>Dashboard</h4>
+        </div>
+
+        <div class="add-task pt-2 px-4">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add task</button>
+    
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Add task</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form to add task -->
+                            
+                            <form method='POST', action="{{ url_for('add_task')}}">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label for="name" class="form-label">{{ form.name.label(class="form-control-label") }}</label>
+                                        <textarea type="text" name="name" class="form-control" required></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="options">{{ 'Status' }}</label>
+                                        <select class="form-control" id="options" name="status" value="{{ task.name if task else '' }}">
+                                            <option value="To Do">To Do</option>
+                                            <option value="In Progress">In Progress</option>
+                                            <option value="Completed">Completed</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group mt-1">
+                                        <label for="dateInput">{{ form.due_date.label(class="form-control-label") }}</label>
+                                        <input type="date" class="form-control" id="dateInput" name="due_date">
+                                    </div>
+                                    
+                                </fieldset>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <div class="form-group">
+                                        {{ form.submit(class="btn btn-success") }}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="title pt-4 px-4">
+            <p class="fw-medium"><i class="bi bi-table"></i> To Do List</p>
+       </div>
+
+        <div class="task-list">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col"><i class="bi bi-justify-right"></i> Task</th>
+                        <th scope="col"><i class="bi bi-calendar4-week"></i> Date Created</th>
+                        <th scope="col"><i class="bi bi-list-check"></i> Status</th>
+                        <th scope="col"><i class="bi bi-calendar4-week"></i> Due Date</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for task in tasks %}
+                        <tr>
+                            <td>{{ task.id }}</td>
+                            <td>{{ task.name }}</td>
+                            <td>{{ task.date_created.strftime("%Y-%m-%d") }}</td>
+                            <td>{{ task.status}}</td>
+                            <td>{{ task.due_date.strftime("%Y-%m-%d")}}</td>
+                            <td>
+                                <div class="action-btn">
+                                    <div class="update-task">
+                                        <!-- Button trigger modal -->
+                                        <button class="btn btn-primary" data-toggle="modal" data-target="#editTaskModal{{ task['id'] }}">Edit</button>
+                                        <!-- <button data-bs-toggle="modal" class="btn btn-primary" data-bs-target="#updateModal">Edit</button> -->
+                                    </div>
+                                    <div class="delete-task">
+                                        <form class="d-inline" method="POST" action="{{ url_for('delete_task', task_id=task.id)}}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% for task in tasks %}
+        <div class="modal fade" id="editTaskModal{{ task['id'] }}" tabindex="-1" role="dialog" aria-labelledby="editTaskModalLabel{{ task['id'] }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Task</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="{{ url_for('update_task', task_id=task.id) }}">
+                            <div class="form-group">
+                                <label for="name" class="form-label">{{ form.name.label }}</label>
+                                <textarea type="text" name="name" id='name' class="form-control" required>{{ task.name }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="options" class="my-2">{{ form.status.label }}</label>
+                                <select class="form-control" id="options" name="status" value={{ task.status }}>
+                                    <option value="To Do">To Do</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <div class="form-group">
+                                    {{ form.submit(class="btn btn-success") }}
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </div>
+</div>
+
+
+{% endblock %} 
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // When an "Edit" button is clicked, open the modal with the corresponding task details
+        $('.edit-task').click(function () {
+            var taskId = $(this).data('task-id');
+            $('#task_id').val(taskId);
+            $('#editTaskModal').modal('show');
+        });
+    });
+</script>
+
